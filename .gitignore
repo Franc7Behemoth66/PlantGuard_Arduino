@@ -2,4 +2,5 @@
 .vscode
 .DS_Store
 infoBot.txt
+tryBot.py
 include/secrets.h

@@ -1,9 +1,27 @@
 #include <Arduino.h>
 #include <Arduino_MKRIoTCarrier.h>
+<<<<<<< Updated upstream
+=======
+#include <WiFiNINA.h>
+
+#include "secrets.h" // .h file that contains sensitive data, such as 
+#include "telegramBot.h"
+
+>>>>>>> Stashed changes
 #include <random>
 
 MKRIoTCarrier carrier;
+<<<<<<< Updated upstream
+=======
+telegramBot bot;
+
+
+
+
+int wifiStatus = WL_IDLE_STATUS; 
+>>>>>>> Stashed changes
 const int pinPIR = A6; 
+const int pinSoilDetector; // idk if i'll use it
 
 // TRUCCO LOGICO: Impostiamo lo stato precedente a 'true'. All'avvio, se la stanza 
 // è vuota (false), la condizione (false != true) sarà vera e costringerà lo schermo
@@ -12,19 +30,33 @@ bool lastStatus = true;
 
 void setup() {
   Serial.begin(9600);
-  
 
+  // WI-FI configuration
+  Serial.println("\n--- AVVIO CONFIGURAZIONE WI-FI ---");
+  if (WiFi.status() == WL_NO_SHIELD) {
+    Serial.println("ERRORE CRITICO: Chip Wi-Fi non rilevato sulla scheda!");
+    while (true); // Blocca il programma per evitare crash peggiori
+  }
+
+  while (wifiStatus != WL_CONNECTED)
+  {
+    Serial.print("Tentativo di connessione alla rete SSID: ");
+    Serial.println(SSID_WIFI);
+    wifiStatus = WiFi.begin(SSID_WIFI, PASSWORD_WIFI);
+    delay(5000); 
+  }
+  Serial.print("Rete connessa, indirizzo IP della scheda MKR: ");
+  Serial.println(WiFi.localIP());
+
+
+  // bot initialization
+  bot.begin();
+    
+  
   CARRIER_CASE = false; 
   carrier.begin();      
   pinMode(pinPIR, INPUT);
 
-  // Messaggio di calibrazione iniziale
-  carrier.display.fillScreen(ST77XX_BLACK);
-  carrier.display.setTextColor(ST77XX_WHITE);
-  carrier.display.setTextSize(2);
-  carrier.display.setCursor(20, 100);
-  carrier.display.print("AVVIO IN CORSO...");
-  
   // NOTA TECNICA: I sensori PIR impiegano circa 10-20 secondi per stabilizzarsi
   // quando ricevono corrente. Questa pausa evita i falsi allarmi all'accensione.
   delay(5000); 
@@ -34,37 +66,21 @@ void loop() {
   // Plettura digitale pura (HIGH / LOW), molto più stabile
   bool currentStatus = (digitalRead(pinPIR) == HIGH);
 
-  // Esegue l'azione solo quando lo stato del sensore cambia effettivamente
-  if (currentStatus != lastStatus) {
-      carrier.display.fillScreen(ST77XX_BLACK);
-      
-      if (currentStatus) {
-          // Stato: Gatto rilevato 
-          carrier.display.setTextColor(ST77XX_RED);
-          carrier.display.setTextSize(3);
-          carrier.display.setCursor(30, 80);
-          carrier.display.print("GATTO!");
-          
-          carrier.leds.fill(carrier.leds.Color(255, 255, 0), 0, 5);//led Gialli, gatto rilevato
-          carrier.leds.show();
-          
-          Serial.println("BUS_DATA: [ALLARME] Gatto rilevato!"); 
-      } 
-      else 
-      {
-          // Stato: Standby e monitoraggio
-          carrier.display.setTextColor(ST77XX_GREEN);
-          carrier.display.setTextSize(2);
-          carrier.display.setCursor(20, 100);
-          carrier.display.print("Monitoraggio...");
-          
-          carrier.leds.fill(carrier.leds.Color(0, 55, 0), 0, 5);
-          carrier.leds.show();
-
-          Serial.println("BUS_DATA: [OK] Area pulita"); 
-      }
-      lastStatus = currentStatus;
+  while(0)
+  {
   }
   
   delay(100);
+<<<<<<< Updated upstream
+=======
+}
+
+
+
+
+void loop(){
+  
+
+  
+>>>>>>> Stashed changes
 }
