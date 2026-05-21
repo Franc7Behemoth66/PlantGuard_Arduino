@@ -15,7 +15,7 @@ telegramBot bot;
 
 int wifiStatus = WL_IDLE_STATUS; 
 const int pinPIR = A6; 
-const int pinSoilDetector; // idk if i'll use it
+// idk if i'll use it
 
 // TRUCCO LOGICO: Impostiamo lo stato precedente a 'true'. All'avvio, se la stanza 
 // è vuota (false), la condizione (false != true) sarà vera e costringerà lo schermo
@@ -58,7 +58,7 @@ void setup() {
 
 void loop() {
   // Plettura digitale pura (HIGH / LOW), molto più stabile
-  bool currentStatus = (digitalRead(pinPIR) == HIGH);
+  //bool currentStatus = (digitalRead(pinPIR) == HIGH);
 
   while(0)
   {
@@ -68,10 +68,3 @@ void loop() {
 }
 
 
-
-
-void loop(){
-  
-
-  
-}
