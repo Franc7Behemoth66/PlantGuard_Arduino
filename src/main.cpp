@@ -1,25 +1,19 @@
 #include <Arduino.h>
 #include <Arduino_MKRIoTCarrier.h>
-<<<<<<< Updated upstream
-=======
 #include <WiFiNINA.h>
 
 #include "secrets.h" // .h file that contains sensitive data, such as 
 #include "telegramBot.h"
 
->>>>>>> Stashed changes
 #include <random>
 
 MKRIoTCarrier carrier;
-<<<<<<< Updated upstream
-=======
 telegramBot bot;
 
 
 
 
 int wifiStatus = WL_IDLE_STATUS; 
->>>>>>> Stashed changes
 const int pinPIR = A6; 
 const int pinSoilDetector; // idk if i'll use it
 
@@ -71,8 +65,6 @@ void loop() {
   }
   
   delay(100);
-<<<<<<< Updated upstream
-=======
 }
 
 
@@ -82,5 +74,4 @@ void loop(){
   
 
   
->>>>>>> Stashed changes
 }
