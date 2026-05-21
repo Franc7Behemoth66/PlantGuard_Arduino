@@ -1,25 +1,19 @@
 #include <Arduino.h>
-#undef abs  // dopo Arduino.h
+#undef abs 
 #include <Arduino_MKRIoTCarrier.h>
 #include <WiFiNINA.h>
 
 #include "secrets.h" // .h file that contains sensitive data, such as 
 #include "telegramBot.h"
 
-#include <random>
-
 MKRIoTCarrier carrier;
 telegramBot bot;
 
-
-
+bool isArduinoActive = true;
 
 int wifiStatus = WL_IDLE_STATUS; 
 const int pinPIR = A6; 
 
-// TRUCCO LOGICO: Impostiamo lo stato precedente a 'true'. All'avvio, se la stanza 
-// è vuota (false), la condizione (false != true) sarà vera e costringerà lo schermo
-// ad aggiornarsi immediatamente mostrando "Monitoraggio..." e i LED verdi.
 bool lastStatus = true; 
 
 void setup() {
@@ -34,37 +28,36 @@ void setup() {
 
   while (wifiStatus != WL_CONNECTED)
   {
-    Serial.print("Tentativo di connessione alla rete SSID ");
+    Serial.print("Trying to connect to ");
     Serial.println(SSID_WIFI);
-    Serial.println("\n Stato rete: ");
-    
-
     wifiStatus = WiFi.begin(SSID_WIFI, PASSWORD_WIFI);
+    Serial.println("\n Network status: ");
     Serial.println(wifiStatus);
-    delay(5000); 
+    delay(5000); // wait 5 sec 
   }
-  Serial.print("Rete connessa, indirizzo IP della scheda MKR: ");
+
+  Serial.print("WI-FI connected, MKR board IP address: ");
   Serial.println(WiFi.localIP());
-
-
   // bot initialization
-  bot.begin();
+  bot.begin(carrier, &isArduinoActive);
     
-  
   CARRIER_CASE = false; 
   carrier.begin();      
   pinMode(pinPIR, INPUT);
-
   // NOTA TECNICA: I sensori PIR impiegano circa 10-20 secondi per stabilizzarsi
   // quando ricevono corrente. Questa pausa evita i falsi allarmi all'accensione.
   delay(5000); 
 }
 
 void loop() {
-  // Plettura digitale pura (HIGH / LOW), molto più stabile
-  //bool currentStatus = (digitalRead(pinPIR) == HIGH);
-
+  
+while(isArduinoActive)
+{
   bot.update();
+
+
+
+}
   
   delay(100);
 }

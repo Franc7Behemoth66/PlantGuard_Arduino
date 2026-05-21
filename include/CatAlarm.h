@@ -10,13 +10,13 @@ public:
     CatAlarm(MKRIoTCarrier& carrier);
     void begin();
     void trigger(bool active);
+    void fallDetector(bool active);
     void updateDisplay(const char* message, uint16_t color, int font_size);
-
 
 private:
 
     MKRIoTCarrier& _carrier;
-    // IMUClass 
+    bool  _fallDetector;
     bool _isTriggered;
 };
 

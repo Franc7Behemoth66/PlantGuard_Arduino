@@ -1,6 +1,6 @@
 
 #include "CatAlarm.h" 
-CatAlarm::CatAlarm(MKRIoTCarrier& carrier) : _carrier(carrier), _isTriggered(false) {}
+CatAlarm::CatAlarm(MKRIoTCarrier& carrier) : _carrier(carrier), _isTriggered(false), _fallDetector(true){}
 
 
 void CatAlarm::begin() {
@@ -38,6 +38,8 @@ void CatAlarm::trigger(bool active) {
 
     }
 }
+
+
 
 void CatAlarm::updateDisplay(const char* message, uint16_t color, int font_size) {
     // Pulisce lo schermo prima di scrivere il nuovo messaggio.

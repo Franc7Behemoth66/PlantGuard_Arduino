@@ -2,20 +2,16 @@
 #define ROOM_ENVIRONMENT_H
 
 #include <Arduino_MKRIoTCarrier.h>
-#include <EnvClass.h>
 
-class RoomEnvironment{
-
-
-    MKRIoTCarrier _carrier;
-    
+class RoomEnvironment {
     public:
         RoomEnvironment(MKRIoTCarrier& carrier);
-
+        bool init();
         double getTemperature();
         double getHumidity();
         
-    
+    private:
+        MKRIoTCarrier& _carrier; 
 };
 
 #endif 
