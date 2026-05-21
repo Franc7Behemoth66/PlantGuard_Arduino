@@ -10,6 +10,7 @@
 #include <WiFiNINA.h>
 #include <UniversalTelegramBot.h>
 #include "secrets.h"
+#include <time.h>
 
 
 class telegramBot {
@@ -26,6 +27,7 @@ class telegramBot {
         WiFiSSLClient _client;
         UniversalTelegramBot *_bot; //pointer to UniversalTelegramBot object
         void _handleMessage(telegramMessage& msg); 
+        String _formatTimestamp(String unixStr);
   
 };
 

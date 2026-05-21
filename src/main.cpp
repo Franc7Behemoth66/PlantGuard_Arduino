@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#undef abs  // dopo Arduino.h
 #include <Arduino_MKRIoTCarrier.h>
 #include <WiFiNINA.h>
 
@@ -15,7 +16,6 @@ telegramBot bot;
 
 int wifiStatus = WL_IDLE_STATUS; 
 const int pinPIR = A6; 
-// idk if i'll use it
 
 // TRUCCO LOGICO: Impostiamo lo stato precedente a 'true'. All'avvio, se la stanza 
 // è vuota (false), la condizione (false != true) sarà vera e costringerà lo schermo
@@ -34,9 +34,13 @@ void setup() {
 
   while (wifiStatus != WL_CONNECTED)
   {
-    Serial.print("Tentativo di connessione alla rete SSID: ");
+    Serial.print("Tentativo di connessione alla rete SSID ");
     Serial.println(SSID_WIFI);
+    Serial.println("\n Stato rete: ");
+    
+
     wifiStatus = WiFi.begin(SSID_WIFI, PASSWORD_WIFI);
+    Serial.println(wifiStatus);
     delay(5000); 
   }
   Serial.print("Rete connessa, indirizzo IP della scheda MKR: ");
@@ -60,9 +64,7 @@ void loop() {
   // Plettura digitale pura (HIGH / LOW), molto più stabile
   //bool currentStatus = (digitalRead(pinPIR) == HIGH);
 
-  while(0)
-  {
-  }
+  bot.update();
   
   delay(100);
 }

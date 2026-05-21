@@ -20,7 +20,10 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
     String text    = msg.text;
     String chat_id = msg.chat_id;
 
-    Serial.println("[BOT] User " +chat_id +", on date " +msg.date + ", sent " + msg.text );
+    String msgTime = _formatTimestamp(msg.date); // message.date è la String del timestamp
+    Serial.println(msgTime); // 
+
+    Serial.println("[BOT] User " +chat_id +", on date " +msgTime + ", sent " + msg.text );
 
 
     if(text == INIT_BOT){
@@ -44,7 +47,17 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
 
     }
 
+}
+
+    String telegramBot:: _formatTimestamp(String unixStr) {
+    time_t t = (time_t)unixStr.toInt();
+    t += 2 * 3600; // UTC+2 ora italiana
+    struct tm* tm_info = gmtime(&t);
+    char buffer[20];
+    strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", tm_info);
+    return String(buffer);
+}
+
     
 
     
-}

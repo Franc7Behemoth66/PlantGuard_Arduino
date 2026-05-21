@@ -6,19 +6,16 @@
 
 class RoomEnvironment{
 
+
+    MKRIoTCarrier _carrier;
+    
     public:
         RoomEnvironment(MKRIoTCarrier& carrier);
 
         double getTemperature();
         double getHumidity();
         
-    private:
-
-        MKRIoTCarrier _carrier;
-        bool init();
-
-
-
+    
 };
 
 #endif 

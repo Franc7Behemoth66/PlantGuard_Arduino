@@ -1,11 +1,7 @@
-#include "RoomEnvironment.h"
+// #include "RoomEnvironment.h"
 
-RoomEnvironment :: RoomEnvironment(MKRIoTCarrier& carrier) : _carrier(carrier){};
+// RoomEnvironment :: RoomEnvironment(MKRIoTCarrier& carrier) : _carrier(carrier){};
 
-bool RoomEnvironment :: init(){
 
-    
-
-}
 
 
