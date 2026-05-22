@@ -1,5 +1,4 @@
-#ifndef ROOM_ENVIRONMENT_H
-#define ROOM_ENVIRONMENT_H
+#pragma once
 
 #include <Arduino_MKRIoTCarrier.h>
 
@@ -13,5 +12,3 @@ class RoomEnvironment {
     private:
         MKRIoTCarrier& _carrier; 
 };
-
-#endif 

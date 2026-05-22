@@ -1,5 +1,5 @@
-#ifndef TEST_HARDWARE_H
-#define TEST_HARDWARE_H
+#pragma once
+
 #include <Arduino.h>
 #include <Arduino_MKRIoTCarrier.h>
 
@@ -9,5 +9,3 @@ String test_gyroscope();
 String test_leds();
 String test_buzzer();
 String run_all_hardware_tests();
-
-#endif

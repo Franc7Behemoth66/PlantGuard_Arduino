@@ -1,5 +1,4 @@
-#ifndef TELEGRAM_BOT_H
-#define TELEGRAM_BOT_H
+#pragma once
 // bot cmds
 #define INFO_BOT "/info"
 #define INIT_GUARD "/active_guard" 
@@ -36,5 +35,3 @@ class telegramBot {
         String  _avaibleCmds();
   
 };
-
-#endif

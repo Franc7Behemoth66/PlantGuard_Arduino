@@ -1,5 +1,4 @@
-#ifndef CAT_ALARM_H
-#define CAT_ALARM_H
+#pragma once
 
 #include <Arduino_MKRIoTCarrier.h>
 #include <IMUClass.h>
@@ -19,5 +18,3 @@ private:
     bool  _fallDetector;
     bool _isTriggered;
 };
-
-#endif 
