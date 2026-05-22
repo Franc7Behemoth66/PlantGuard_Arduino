@@ -8,8 +8,9 @@ class CatAlarm {
 public:
     CatAlarm(MKRIoTCarrier& carrier);
     void begin();
+    void update();
     void trigger(bool active);
-    void fallDetector(bool active);
+    bool fallDetector(bool active);
     void updateDisplay(const char* message, uint16_t color, int font_size);
 
 private:
@@ -17,4 +18,7 @@ private:
     MKRIoTCarrier& _carrier;
     bool  _fallDetector;
     bool _isTriggered;
+    int _nextDelay;
+    int _beepCounter;
+    int _lastBeepTime;
 };

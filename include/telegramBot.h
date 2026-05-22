@@ -11,7 +11,6 @@
 #include <time.h>
 // local libs
 #include "secrets.h"
-#include "RoomEnvironment.h"
 #include "CatAlarm.h"
 #include "testHardware.h"
 
@@ -28,10 +27,11 @@ class telegramBot {
 
         WiFiSSLClient _client;
         UniversalTelegramBot *_bot; //pointer to UniversalTelegramBot object
-        RoomEnvironment * _env;
+        MKRIoTCarrier* _carrier;
         bool *_arduinoBoardState;
         void _handleMessage(telegramMessage& msg); 
         String _formatTimestamp(String unixStr);
+        bool _isCest(time_t t); //return true for CEST (Summer time, UTC+2) and false for CET (Standard time, UTC+1).
         String  _avaibleCmds();
   
 };
