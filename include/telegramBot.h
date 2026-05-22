@@ -1,6 +1,7 @@
 #ifndef TELEGRAM_BOT_H
 #define TELEGRAM_BOT_H
-// dis, 
+// bot cmds
+#define INFO_BOT "/info"
 #define INIT_GUARD "/active_guard" 
 #define STOP_GUARD "/stop_guard"
 #define TEST_ALARM "/test"
@@ -9,16 +10,18 @@
 #include <WiFiNINA.h>
 #include <UniversalTelegramBot.h>
 #include <time.h>
+// local libs
 #include "secrets.h"
 #include "RoomEnvironment.h"
 #include "CatAlarm.h"
+#include "testHardware.h"
 
 class telegramBot {
 
     public:
         telegramBot();
         void update();
-        void begin(MKRIoTCarrier &carrier,bool& state);
+        void begin(MKRIoTCarrier& carrier,bool& state);
         void sendMessage(const String& text);
         bool isSystemActive();
         
@@ -30,6 +33,7 @@ class telegramBot {
         bool *_arduinoBoardState;
         void _handleMessage(telegramMessage& msg); 
         String _formatTimestamp(String unixStr);
+        String  _avaibleCmds();
   
 };
 

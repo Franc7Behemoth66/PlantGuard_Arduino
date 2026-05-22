@@ -25,7 +25,6 @@ void setup() {
     Serial.println("ERRORE CRITICO: Chip Wi-Fi non rilevato sulla scheda!");
     while (true); // Blocca il programma per evitare crash peggiori
   }
-
   while (wifiStatus != WL_CONNECTED)
   {
     Serial.print("Trying to connect to ");
@@ -39,10 +38,10 @@ void setup() {
   Serial.print("WI-FI connected, MKR board IP address: ");
   Serial.println(WiFi.localIP());
   // bot initialization
-  bot.begin(carrier, &isArduinoActive);
-    
+  carrier.begin();     
+  bot.begin(carrier, isArduinoActive);
+  
   CARRIER_CASE = false; 
-  carrier.begin();      
   pinMode(pinPIR, INPUT);
   // NOTA TECNICA: I sensori PIR impiegano circa 10-20 secondi per stabilizzarsi
   // quando ricevono corrente. Questa pausa evita i falsi allarmi all'accensione.
@@ -51,14 +50,14 @@ void setup() {
 
 void loop() {
   
-while(isArduinoActive)
-{
   bot.update();
+  if(isArduinoActive){
 
+  }
+  else{
 
-
-}
-  
+  }
+ 
   delay(100);
 }
 
