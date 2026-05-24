@@ -7,11 +7,11 @@ String test_display() {
     carrier.display.setTextColor(ST77XX_WHITE);
     carrier.display.setTextSize(2);
     carrier.display.setCursor(20, 100);
-    carrier.display.print("TEST HW...");
-    delay(400);
+    carrier.display.print("TEST DISP...");
+    delay(300);
     carrier.display.fillScreen(ST77XX_BLACK);
     return "DISP OK\n";
-}
+}// not atomic fn
 
 String test_temperature() {
     double t = carrier.Env.readTemperature();
@@ -20,7 +20,7 @@ String test_temperature() {
         return "ENV: OK" ;
     }
     return "ENV: ERROR\n";
-}
+} // atomic fn
 
 String test_gyroscope() {
     float x, y, z;
@@ -29,7 +29,7 @@ String test_gyroscope() {
         return "IMU: OK ";
     }
     return "IMU: OFFLINE/STUCK\n";
-}
+} // atomic fn
 
 String test_leds() {
     uint32_t white = carrier.leds.Color(50, 50, 50); 
@@ -39,14 +39,14 @@ String test_leds() {
     carrier.leds.fill(0, 0, 5); 
     carrier.leds.show();
     return "LED: TEST OK\n";
-}
+}// not atomic fn
 
 String test_buzzer() {
     carrier.Buzzer.beep(2000, 50);
-    delay(100);
     carrier.Buzzer.beep(2000, 50);
     return "BUZZ: TEST OK\n";
-}
+}// not atomic fn
+
 
 String run_all_hardware_tests() {
     String log = "--- HARDWARE TEST ---\n";
@@ -56,4 +56,7 @@ String run_all_hardware_tests() {
     log += test_leds();
     log += test_buzzer();    
     return log;
-}
+} 
+//Some functions are not atomic by design: since bot input is checked every 1s,
+// and the total delay of all test functions is approximately 650ms, no messages
+// will be missed during the test execution.

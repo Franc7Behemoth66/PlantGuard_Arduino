@@ -6,6 +6,10 @@ void telegramBot ::begin( MKRIoTCarrier& carrier, bool& state){
     _bot = new UniversalTelegramBot(BOT_TOKEN, _client);
     _carrier = &carrier;
     _arduinoBoardState = &state;
+
+    _bot->getUpdates(_bot->last_message_received + 1); // discard the old messages
+
+
 }
 
 void telegramBot :: update() 
@@ -13,7 +17,7 @@ void telegramBot :: update()
     int n = _bot->getUpdates(_bot->last_message_received + 1);
     for (int i = 0; i < n; i++) 
         _handleMessage(_bot->messages[i]);
-    
+
 }
 
 void telegramBot::_handleMessage(telegramMessage& msg) {
@@ -24,9 +28,7 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
     // security layer: only the owner of the bot can use it 
     if (chat_id != USER_ID) {
         Serial.println("[SECURITY] User " + chat_id+ " not authorized");
-        _bot->sendMessage(chat_id,"You are not authorized to use this bot");
-        return; 
-    }
+        return;}
 
     String msgTime = _formatTimestamp(msg.date);
     Serial.println("[BOT] User authorized " +chat_id +", on date " +msgTime + ", sent " + msg.text ); 
