@@ -5,8 +5,8 @@ extern MKRIoTCarrier carrier; // MKRIoTCarrier object defined in main.cpp
 String test_display() {
     carrier.display.fillScreen(ST77XX_BLUE);
     carrier.display.setTextColor(ST77XX_WHITE);
-    carrier.display.setTextSize(2);
-    carrier.display.setCursor(20, 100);
+    carrier.display.setTextSize(7);
+    carrier.display.setCursor(120, 120);
     carrier.display.print("TEST DISP...");
     delay(300);
     carrier.display.fillScreen(ST77XX_BLACK);
@@ -17,7 +17,7 @@ String test_temperature() {
     double t = carrier.Env.readTemperature();
     double h = carrier.Env.readHumidity();
     if (t > -20.0 && t < 80.0) {
-        return "ENV: OK" ;
+        return "ENV: OK\n" ;
     }
     return "ENV: ERROR\n";
 } // atomic fn
@@ -26,7 +26,7 @@ String test_gyroscope() {
     float x, y, z;
     if (carrier.IMUmodule.gyroscopeAvailable()) {
         carrier.IMUmodule.readGyroscope(x, y, z);
-        return "IMU: OK ";
+        return "IMU: OK \n";
     }
     return "IMU: OFFLINE/STUCK\n";
 } // atomic fn

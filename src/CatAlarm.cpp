@@ -1,5 +1,5 @@
 #include "CatAlarm.h" 
-CatAlarm::CatAlarm(MKRIoTCarrier& carrier) : _carrier(carrier), _isTriggered(false), _fallDetector(true), _beepCounter(0),
+CatAlarm::CatAlarm(MKRIoTCarrier& carrier, bool& isSysTrigger ) : _carrier(carrier), _isTriggered(isSysTrigger), _fallDetector(true), _beepCounter(0),
     _lastBeepTime(0){}
 
 void CatAlarm::begin() {
@@ -27,47 +27,51 @@ void CatAlarm::trigger(bool active) {
 }
 
 void CatAlarm::update() {
-
     if (!_isTriggered) return;
 
-    static bool soundStatus = false; // initialized only the first time update() is called
-    static long int startTime = 0;  // initialized only the first time update() is called
+    static bool soundStatus = false; 
     long int currentTime = millis();
 
-    if(!soundStatus && ( ( currentTime - _lastBeepTime) >= random(200) + 100)) { // delay beetwens beep
+    if(!soundStatus && ( (currentTime - _lastBeepTime) >= random(200) + 100)) { 
         _carrier.Buzzer.sound(random(4000) + 870);
-        startTime = currentTime;
         soundStatus = true;
+        _lastBeepTime = currentTime; 
     } 
 
-    else if (soundStatus && ((currentTime - _lastBeepTime) >= random(400) + 100 )){ // beep duration
+    else if (soundStatus && ((currentTime - _lastBeepTime) >= random(400) + 100 )) { 
         _carrier.Buzzer.noSound();
-        _lastBeepTime = currentTime;
-        _beepCounter ++;
         soundStatus = false;
+        _beepCounter++;
+        _lastBeepTime = currentTime; 
+    }
+    
+    if (_beepCounter >= 7){
+        trigger(false);
     }
     
 }
 
 bool CatAlarm::fallDetector(bool active) {
     _fallDetector = active;
-    if (!_fallDetector) return; 
-    float x, y, z;
-    if (_carrier.IMUmodule.accelerationAvailable()) {
-        _carrier.IMUmodule.readAcceleration(x, y, z);
+    if (_fallDetector)
+    { 
+        float x, y, z;
+        if (_carrier.IMUmodule.accelerationAvailable()) {
+            _carrier.IMUmodule.readAcceleration(x, y, z);
         // Calculate the squared magnitude of the acceleration vector.
         // use power of itself rather the sqrt() of itself.
-        float A = (x * x) + (y * y) + (z * z);
+            float A = (x * x) + (y * y) + (z * z);
         // A resting board outputs a squared vector of 1.0 (1g * 1g).
         // 1. Freefall condition: the value drops drastically (approaching 0g).
         // 2. Shock/Impact condition: the value spikes well above normal gravity (> 2g).
-        if (A < 0.15 || A > 4.0) {
-            Serial.println("[ALARM] Fall or violent impact detected!");
-            updateDisplay("FALL DETECTED!", ST77XX_RED, 3);
-            return true;
-        }
-        return false;
+            if (A < 0.15 || A > 4.0) {
+                Serial.println("[ALARM] Fall or violent impact detected!");
+                updateDisplay("FALL DETECTED!", ST77XX_RED, 3);
+                return true;
+            }
+            return false;
     }
+}
 }
 
 void CatAlarm::updateDisplay(const char* message, uint16_t color, int font_size) {

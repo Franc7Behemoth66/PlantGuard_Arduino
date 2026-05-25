@@ -11,6 +11,7 @@
 #include <WiFiNINA.h>
 #include <UniversalTelegramBot.h>
 #include <time.h>
+#include <ezTime.h> // obtain the current time zone
 // local libs
 #include "secrets.h"
 #include "CatAlarm.h"
@@ -21,7 +22,7 @@ class telegramBot {
     public:
         telegramBot();
         void update();
-        void begin(MKRIoTCarrier& carrier,bool& state);
+        void begin(MKRIoTCarrier& carrier,bool& state, Timezone& myTimeZone);
         void sendMessage(const String& text);
         bool isSystemActive();
         
@@ -29,10 +30,9 @@ class telegramBot {
         WiFiSSLClient _client;
         UniversalTelegramBot *_bot; //pointer to UniversalTelegramBot object
         MKRIoTCarrier* _carrier; // ptr to a MKRIoTCarrier object
-        bool *_arduinoBoardState; // ptr to a bool variable that determinate the status of the sys, located in main.cpp
+        bool *_arduinoBoardState; // ptr to a bool variable tha that determinate the status of the sys, located in main.cpp
+        Timezone *_tz; // pointer to the clock 
         void _handleMessage(telegramMessage& msg); 
-        String _formatTimestamp(String unixStr);
-        bool _isCest(time_t t); //return true for CEST (Summer time, UTC+2) and false for CET (Standard time, UTC+1).
         String  _avaibleCmds();
   
 };
