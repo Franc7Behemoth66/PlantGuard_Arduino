@@ -29,7 +29,7 @@ class telegramBot {
         WiFiSSLClient _client;
         UniversalTelegramBot *_bot; //pointer to UniversalTelegramBot object
         MKRIoTCarrier* _carrier; // ptr to a MKRIoTCarrier object
-        bool *_arduinoBoardState;
+        bool *_arduinoBoardState; // ptr to a bool variable that determinate the status of the sys, located in main.cpp
         void _handleMessage(telegramMessage& msg); 
         String _formatTimestamp(String unixStr);
         bool _isCest(time_t t); //return true for CEST (Summer time, UTC+2) and false for CET (Standard time, UTC+1).

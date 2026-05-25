@@ -8,4 +8,4 @@ String test_temperature();
 String test_gyroscope();
 String test_leds();
 String test_buzzer();
-String run_all_hardware_tests(); // some fn are not atomic, this may lead to some 
+String run_all_hardware_tests(); 
