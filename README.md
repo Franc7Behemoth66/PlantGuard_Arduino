@@ -22,8 +22,8 @@ Plant Guard keeps your plants safe by:
 
 | Component | Details |
 |---|---|
-| Board | Arduino MKR WiFi 1010 |
-| Shield | Arduino MKR IoT Carrier |
+| Board | [Arduino MKR WiFi 1010](https://docs.arduino.cc/hardware/mkr-wifi-1010/) |
+| Shield | [Arduino MKR IoT Carrier](https://docs.arduino.cc/tutorials/mkr-iot-carrier/mkr-iot-carrier-01-technical-reference/#display) |
 | Sensor | PIR motion sensor (connected to pin `A6`) |
 | Connectivity | Wi-Fi (via `WiFiNINA`) |
 
@@ -38,7 +38,7 @@ Install the following libraries via the Arduino Library Manager or PlatformIO:
 | `Arduino_MKRIoTCarrier` | Carrier hardware abstraction (display, LEDs, buzzer, IMU, env sensor) |
 | `WiFiNINA` | Wi-Fi connectivity |
 | `UniversalTelegramBot` | Telegram Bot API client |
-| `ArduinoJson` | Required by UniversalTelegramBot |
+| `ArduinoJson` |Required by UniversalTelegramBot, converts JSON API responses into data structures|
 | `ezTime` | NTP time sync with automatic timezone and DST support |
 |`EEPROM`   | Required by ezTime|
 |`mbed`|Required by EEPROM|
@@ -79,7 +79,7 @@ Create a `secrets.h` file in the `include/` folder with the following content:
 #define USER_ID       "your_telegram_chat_id"
 ```
 
-> ⚠️ **Never commit `secrets.h` to version control.** Add it to `.gitignore`.
+> ⚠️ This file must stay on device, and it shouldn't be add to git or pushed on a public repo. In order to do so, `src/secrets.h` is already listed in `.gitignore`.
 
 To obtain a bot token, talk to [@BotFather](https://t.me/BotFather) on Telegram.  
 To find your chat ID, talk to [@userinfobot](https://t.me/userinfobot).
@@ -132,7 +132,7 @@ On detection:
 
 Arduino has no real-time clock — every time it boots, its internal clock resets to zero. To solve this, the system syncs with an **NTP (Network Time Protocol) server** on boot: a public internet server that provides the exact current time (accurate to milliseconds, sourced from atomic clocks).
 
-The library used is **ezTime**, which handles sync, timezone, and DST automatically:
+The library used is **ezTime**, which handles sync and timezone automatically:
 
 ```cpp
 waitForSync();                  // blocks until NTP sync is complete
