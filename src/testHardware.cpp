@@ -6,7 +6,7 @@ String test_display() {
     carrier.display.fillScreen(ST77XX_BLUE);
     carrier.display.setTextColor(ST77XX_WHITE);
     carrier.display.setTextSize(7);
-    carrier.display.setCursor(120, 120);
+    carrier.display.setCursor(20, 10);
     carrier.display.print("TEST DISP...");
     delay(300);
     carrier.display.fillScreen(ST77XX_BLACK);
