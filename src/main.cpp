@@ -48,8 +48,8 @@ void setup() {
   --------------------------------------------*/
   CARRIER_CASE = false; 
   carrier.begin();
-  waitForSync();
-  timeZone.setLocation("geoip");     
+  waitForSync();// blocks until NTP sync is complete
+  timeZone.setLocation("geoip"); // detects timezone from the board's public IP
 
   bot.begin(carrier, isArduinoActive, timeZone);
   pinMode(pinPIR, INPUT);
