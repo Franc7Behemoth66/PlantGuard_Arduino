@@ -57,7 +57,7 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
     else if(text == REQ_DATA){
         double temp = _carrier->Env.readTemperature();
         double humidity = _carrier->Env.readHumidity();
-        bot_reply = "Report of : " +_tz->dateTime("l, d-M-Y H:i") + ".Environmental data :\n Temperature: " + String(temp) + " °C\n Humidity: " + String(humidity) + " %";
+        bot_reply = "Report of " +_tz->dateTime("l, d-M-Y H:i") + ".\nEnvironmental data :\n Temperature: " + String(temp) + " °C\n Humidity: " + String(humidity) + " %";
         _bot->sendMessage(chat_id, bot_reply);
     }
 

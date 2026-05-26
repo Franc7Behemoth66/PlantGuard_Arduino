@@ -15,7 +15,6 @@ String test_display() {
 
 String test_temperature() {
     double t = carrier.Env.readTemperature();
-    double h = carrier.Env.readHumidity();
     if (t > -20.0 && t < 80.0) {
         return "ENV: OK\n" ;
     }

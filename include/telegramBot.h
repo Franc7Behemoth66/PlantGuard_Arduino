@@ -9,9 +9,9 @@
 #define BOT_POLL_INTERVAL 1000 // check for bot cmds every 1 s
 
 #include <WiFiNINA.h>
-#include <UniversalTelegramBot.h>
-#include <time.h>
 #include <ezTime.h> // obtain the current time zone
+#include <UniversalTelegramBot.h>
+
 // local libs
 #include "secrets.h"
 #include "CatAlarm.h"
@@ -24,7 +24,6 @@ class telegramBot {
         void update();
         void begin(MKRIoTCarrier& carrier,bool& state, Timezone& myTimeZone);
         void sendMessage(const String& text);
-        bool isSystemActive();
         
     private:
         WiFiSSLClient _client;
