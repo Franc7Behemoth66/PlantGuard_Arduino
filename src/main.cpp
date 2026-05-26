@@ -93,9 +93,11 @@ void loop() {
         isArduinoActive = false;
         isScreenUpdated = false;
     }
-  alarm.update(); // the alarm continue to play, no matter what cmds gives the user, until it reaches 7 beeps
 
   }
+
+  alarm.update(); // the alarm continue to play, no matter what cmds gives the user, until it reaches 7 beeps
+
   
   delay(10);
 }

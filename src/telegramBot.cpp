@@ -1,12 +1,12 @@
 #include "telegramBot.h"
 
-telegramBot::telegramBot() : _bot(nullptr), _carrier(nullptr), _arduinoBoardState(nullptr)  {}
+telegramBot::telegramBot() : _bot(nullptr), _carrier(nullptr), _arduinoBoardState(nullptr), _tz(nullptr)  {}
 
 void telegramBot ::begin( MKRIoTCarrier& carrier, bool& state, Timezone& myTimeZone){ 
     _bot = new UniversalTelegramBot(BOT_TOKEN, _client);
     _carrier = &carrier;
     _arduinoBoardState = &state;
-    *_tz = myTimeZone;
+    _tz = &myTimeZone;
 
     _bot->getUpdates(_bot->last_message_received + 1); // discard the old messages
 }
