@@ -1,6 +1,6 @@
 #  Plant Guard System
 
-[![Language](https://img.shields.io/badge/language-C++%2011-red)](https://isocpp.org/)
+[![Language](https://img.shields.io/badge/language-C++%2011-red)](https://en.cppreference.com/cpp/11)
 [![Platform](https://img.shields.io/badge/platform-Arduino-blue)](https://www.arduino.cc)
 
 An Arduino-based smart plant guardian that detects cats, monitors for falls, and reports via Telegram — built for the **Arduino MKR IoT Carrier**.
@@ -40,8 +40,6 @@ Install the following libraries via the Arduino Library Manager or PlatformIO:
 | `UniversalTelegramBot` | Telegram Bot API client |
 | `ArduinoJson` |Required by UniversalTelegramBot, converts JSON API responses into data structures|
 | `ezTime` | NTP time sync with automatic timezone and DST support |
-|`EEPROM`   | Required by ezTime|
-|`mbed`|Required by EEPROM|
 
 ---
 
@@ -60,9 +58,24 @@ PlantGuard_MKR/
 │   ├── telegramBot.cpp
 │   └── testHardware.cpp
 ├── .gitignore
+├── LICENSE
+├── patch_libs.py           # Patches incompatible library headers at build time
 ├── platformio.ini          # PlatformIO build configuration
 └── README.md
 ```
+
+---
+## 🩹 Library Patches — `patch_libs.py`
+
+Two of the dependencies ship with bugs or incompatibilities with the SAMD21 hardware. `patch_libs.py` is a PlatformIO pre-build script that patches the library source files automatically before compilation, so no manual edits are needed.
+
+**Patch 1 — ezTime: disable EEPROM cache**  
+ezTime by default tries to cache timezone data in EEPROM. The MKR WiFi 1010 has no EEPROM, which causes the board to stall on boot. The script comments out `#define EZTIME_CACHE_EEPROM` in `ezTime.h` to disable this behaviour.
+
+**Patch 2 — Arduino_MKRIoTCarrier: fix `NONE` enum collision**  
+The carrier library declares a `NONE = -1` enum in the global namespace, which collides with identifiers from other libraries and causes ODR (One Definition Rule) compilation errors. The script renames it to `SHANE_NONE` via regex to resolve the conflict.
+
+Both patches are idempotent — running them multiple times has no effect. They are triggered automatically by PlatformIO at the start of every build via `env.AddPreAction("compile", ...)`, so they also handle cases where libraries are re-downloaded mid-project.
 
 ---
 
@@ -127,12 +140,11 @@ On detection:
 - `catDetected` is passed by reference to `CatAlarm` — when the alarm finishes it resets the flag automatically, no extra logic needed in `main.cpp`
 
 ---
+## 🌐 Timezone & NTP (Network Time Protocol)
 
-## 🌐 Timezone
+Arduino has no real-time clock — every time it boots, its internal clock resets to zero. To solve this, the system syncs with an **NTP server** on boot: a public internet server that provides the exact current time (accurate to milliseconds, sourced from atomic clocks).
 
-Arduino has no real-time clock — every time it boots, its internal clock resets to zero. To solve this, the system syncs with an **NTP (Network Time Protocol) server** on boot: a public internet server that provides the exact current time (accurate to milliseconds, sourced from atomic clocks).
-
-The library used is **ezTime**, which handles sync and timezone automatically:
+The library used is **ezTime**, which handles sync, timezone, and DST automatically:
 
 ```cpp
 waitForSync();                  // blocks until NTP sync is complete
@@ -141,9 +153,17 @@ timeZone.setLocation("geoip");  // detects timezone from the board's public IP
 
 `waitForSync()` queries `pool.ntp.org` — a pool of thousands of free public NTP servers worldwide. Once synced, the board knows the exact UTC time.
 
-`setLocation("geoip")` then asks a GeoIP service which timezone corresponds to the board's IP address, and loads the correct DST rules automatically. No timezone string or offset needs to be configured manually — it works anywhere in the world.
+`setLocation("geoip")` asks a GeoIP service which timezone corresponds to the board's IP address, and loads the correct DST rules automatically. No timezone string or offset needs to be configured manually — it works anywhere in the world.
 
-`events()` is called every loop iteration: it keeps the internal clock aligned with the NTP server in the background, correcting any drift over time.
+If the GeoIP lookup fails, the system falls back to Italy's timezone automatically:
+
+```cpp
+if (!timeZone.setLocation("geoip")) {
+    timeZone.setPosix("CET-1CEST,M3.5.0,M10.5.0/3"); // Italy fallback
+}
+```
+
+`events()` is called every loop iteration to keep the internal clock aligned with the NTP server, correcting any drift over time.
 
 Timestamps appear in all Telegram messages and `/plant_health` reports in the **local time of the network the board is connected to**, with summer/winter time handled automatically.
 
