@@ -9,13 +9,7 @@ An Arduino-based smart plant guardian that detects cats, monitors for falls, and
 
 ##  Overview
 
-Plant Guard keeps your plants safe by:
-- Detecting cats nearby through a **PIR sensor**
-- Sounding a randomized **buzzer alarm** and flashing **LEDs** when a cat is detected
-- Detecting if the plant **falls or is violently hit** via the onboard IMU accelerometer
-- Sending **Telegram notifications** to the owner for both events
-- Exposing a set of **bot commands** to control the system remotely
-
+Plant Guard protects your plants by detecting cats nearby using a PIR sensor.  When a cat is spotted, it sounds a randomised buzzer alarm and flashes LEDs.  The onboard IMU accelerometer also detects falls or violent hits, sending Telegram notifications to the owner for both events.  Additionally, a set of bot commands allows remote control of the system.
 ---
 
 ## 🛠 Hardware Requirements
