@@ -1,11 +1,11 @@
 #include "CatAlarm.h"
 
 CatAlarm::CatAlarm(MKRIoTCarrier& carrier, bool& isSysTrigger)
-    : _carrier(carrier), _isTriggered(isSysTrigger), _fallDetector(true), _beepCounter(0), _lastBeepTime(0) {}
+    : _carrier(carrier), _isTriggered(isSysTrigger), _fallDetector(true), _beepCounter(0), _lastBeepTime(0), _lastBlinkTime(0) {}
 
 void CatAlarm::begin() {
     _carrier.display.fillScreen(ST77XX_BLACK);
-    _carrier.leds.clear();
+     _carrier.leds.fill(_carrier.leds.Color(0, 55, 0), 0, 5); // green: system ready
     _carrier.leds.show();
 }
 
@@ -17,6 +17,7 @@ void CatAlarm::trigger(bool active) {
             _isTriggered = true;
             _beepCounter = 0;
             _lastBeepTime = millis();
+            _lastBlinkTime = 0;
         }
     } else {
         _isTriggered = false;
@@ -30,7 +31,18 @@ void CatAlarm::update() {
     if (!_isTriggered) return;
 
     static bool soundStatus = false;
+    static bool blinkStatus = false;
     long int currentTime = millis();
+
+    if (currentTime - _lastBlinkTime >= 300) {
+        blinkStatus = !blinkStatus;
+        if (blinkStatus)
+            _carrier.leds.fill(_carrier.leds.Color(255, 255, 0), 0, 5); // leds yellow blinks every 300 ms
+        else
+            _carrier.leds.clear();
+        _carrier.leds.show();
+        _lastBlinkTime = currentTime;
+    }
 
     if (!soundStatus && ((currentTime - _lastBeepTime) >= random(200) + 100)) {
         _carrier.Buzzer.sound(random(500) + 170);

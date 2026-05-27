@@ -18,5 +18,6 @@ private:
     bool  _fallDetector;
     bool &_isTriggered; // reference to a bool variable that determinate if the cat is present or noy, located in main.cpp
     int _beepCounter;
-    int _lastBeepTime;
+    long int _lastBeepTime; 
+    long int _lastBlinkTime; // LED blink timer
 };

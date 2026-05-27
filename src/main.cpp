@@ -48,10 +48,11 @@ void setup() {
     /*--------------------------------------------/
               bot, clock and carrier initialization
     --------------------------------------------*/
+
     CARRIER_CASE = false;
+    alarm.begin();
     carrier.begin();
     waitForSync();
-
     // if timeZone.setLocation("geoip") fails (due to a server error), the sys statically set the time on Italy's time zone
     if (!timeZone.setLocation("geoip")) {
         Serial.println("[TZ] geoip failed, using Italy fallback");
