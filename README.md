@@ -95,6 +95,13 @@ To find your chat ID, talk to [@userinfobot](https://t.me/userinfobot).
 
 ## 🤖 Telegram Bot Commands
 
+
+<p align="center">
+  <img src=".github/images/image1.png" width="45%" alt="descrizione 1">
+  &nbsp;&nbsp;
+  <img src=".github/images/image2.png" width="45%" alt="descrizione 2">
+</p>
+
 | Command | Description |
 |---|---|
 | `/help` | Show all available commands |
@@ -110,30 +117,23 @@ The bot includes a **security layer**: only messages from the configured `USER_I
 
 ## ⚙️ System Behaviour
 
-### Cat Detection
-When the PIR sensor reads HIGH:
-- The display shows a cat ASCII art message
-- The alarm triggers: LEDs turn yellow, the buzzer plays **7 randomized beeps**
-- After the 7th beep the alarm stops automatically and the system resumes monitoring
-- While the alarm is playing the PIR is ignored — no double triggers
-
-### Fall Detection
-The IMU continuously monitors the squared magnitude of the acceleration vector:
-- **Freefall** → magnitude drops below `0.15 g²`
-- **Impact / violent shake** → magnitude spikes above `4.0 g²`
-
-On detection:
-1. Two Telegram alerts are sent to the owner
-2. The display shows a warning message
-3. The alarm triggers automatically
-4. The system deactivates itself (`isArduinoActive = false`)
-
+IMU squared magnitude is checked every loop (`A = x²+y²+z²`, resting ≈ `1.0 g²`):
+ 
+| Condition | Threshold | Meaning |
+|---|---|---|
+| Freefall | `A < 0.15 g²` | Plant airborne |
+| Impact | `A > 4.0 g²` | Plant hit or landed |
+ 
+On detection → two Telegram alerts, alarm triggers, `isArduinoActive = false`. Reactivation requires manual `/active_guard`.
+ 
 ### Alarm (`CatAlarm`)
-- Beep durations and intervals are **randomized** for a less predictable alarm
-- LEDs turn **yellow** when triggered, **green** when deactivated
-- The alarm is non-blocking: managed via `millis()` in `update()`
-- `catDetected` is passed by reference to `CatAlarm` — when the alarm finishes it resets the flag automatically, no extra logic needed in `main.cpp`
-
+Non-blocking — all timing via `millis()`, no `delay()`. Beep frequency, duration and gap are randomized each cycle.
+ 
+LED state:
+- 🟢 **Green (static)** — idle, monitoring active
+- 🟡 **Yellow (blinking 300 ms)** — alarm active
+- 🟢 **Green (static)** — alarm done, back to monitoring
+`catDetected` is passed by reference — `trigger(false)` resets it directly, no extra logic in `main.cpp`.
 ---
 ## 🌐 Timezone 
 

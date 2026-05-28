@@ -34,7 +34,6 @@ void CatAlarm::update() {
 
     long int currentTime = millis();
 
-    // --- LED blink (yellow / off every 300ms) ---
     if (currentTime - _lastBlinkTime >= 300) {
         _blinkStatus = !_blinkStatus;
         if (_blinkStatus)

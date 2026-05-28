@@ -85,6 +85,7 @@ void loop() {
             if (thereIsCat) {
                 Serial.println("[SYS] Cat detected");
                 alarm.updateDisplay("Cat detected\n /\\_/\\\n( o.o )\n > ^ < ", ST77XX_WHITE, 4);
+                bot.sendMessage("[ ON " + timeZone.dateTime("l, d-M-Y H:i") + " ]" + " Cat detected");
                 alarm.trigger(true);
                 catDetected = true;
                 isScreenUpdated = false;
