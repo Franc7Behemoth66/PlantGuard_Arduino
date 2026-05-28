@@ -8,7 +8,7 @@
 An Arduino-based smart plant guardian that detects cats, monitors for falls, and reports via Telegram — built for the **Arduino MKR IoT Carrier**.
 
 ---
-## 🎯Overview
+## 🎯What this code does?
 
 Plant Guard protects your plants by detecting cats nearby using a PIR sensor. When a cat is spotted, it sounds a randomised buzzer alarm and flashes LEDs. The onboard IMU accelerometer also detects falls or violent hits, sending Telegram notifications to the owner for both events. Additionally, a set of bot commands allows remote control of the system.
 
@@ -45,14 +45,14 @@ PlantGuard_MKR/
 │   ├── CatAlarm.h          # Alarm logic: buzzer, LEDs, fall detection, display
 │   ├── telegramBot.h       # Telegram bot: command handling, message formatting
 │   ├── testHardware.h      # Hardware self-test routines
-│   └── secrets.h           # ⚠️ Sensitive credentials (not committed to VCS)
+│   └── secrets.h           # ⚠️ Sensitive credentials 
 ├── src/
 │   ├── main.cpp            # Entry point: setup, loop, PIR reading, system state
 │   ├── CatAlarm.cpp
 │   ├── telegramBot.cpp
 │   └── testHardware.cpp
 ├── .gitignore
-├── LICENSE
+├── LICENSE                 # MIT license
 ├── patch_libs.py           # Patches incompatible library headers at build time
 ├── platformio.ini          # PlatformIO build configuration
 └── README.md
