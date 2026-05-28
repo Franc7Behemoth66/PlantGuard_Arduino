@@ -27,49 +27,75 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
         Serial.println("[SECURITY] User " + chat_id+ " not authorized");
         return;}
 
-    String msgTime = _tz->dateTime("l, d-M-Y H:i");
-    Serial.println("[BOT] User authorized " +chat_id +", on date " +msgTime + ", sent " + msg.text ); 
+    String *msgTime = &_tz->dateTime("l, d-M-Y H:i");
+    Serial.println("[BOT] User authorized " +chat_id +", on date " +*msgTime + ", sent " + msg.text ); 
 
     if(text == INIT_GUARD ){ 
         if(! *_arduinoBoardState ){
             * _arduinoBoardState = true;
-            _bot->sendMessage(chat_id,"The Arduino system has been power on");
+            bot_reply = "[ " +*msgTime + " ]" + "The Arduino system has been power on";
+            sendMessage(bot_reply);
         }
         else
-            _bot->sendMessage(chat_id,"The Arduino system was already power on");
+            sendMessage("The Arduino system was already power on");
     }
 
     else if(text == STOP_GUARD){
         if( *_arduinoBoardState ){
             * _arduinoBoardState = false;
-            _bot->sendMessage(chat_id,"The Arduino system has been power off");
+            bot_reply = "[ " +*msgTime + " ]" + "The Arduino system has been power off" ;
+            sendMessage(bot_reply);
         }
         else
-            _bot->sendMessage(chat_id,"The Arduino system was already power off");
+            sendMessage("The Arduino system was already power off");
     }
 
     else if(text == TEST_ALARM){
         Serial.println("[SYS]Test started");
         bot_reply = run_all_hardware_tests();
-        _bot->sendMessage(chat_id,bot_reply);        
+        sendMessage(bot_reply);        
     }
 
     else if(text == REQ_DATA){
         double temp = _carrier->Env.readTemperature();
         double humidity = _carrier->Env.readHumidity();
-        bot_reply = "Report of " +_tz->dateTime("l, d-M-Y H:i") + ".\nEnvironmental data :\n Temperature: " + String(temp) + " °C\n Humidity: " + String(humidity) + " %";
-        _bot->sendMessage(chat_id, bot_reply);
+        bot_reply = "[ Report of: " +*msgTime + " ]" + "\nEnvironmental data :\n temperature: " + String(temp) + " °C\n humidity: " + String(humidity) + " %";
+        sendMessage(bot_reply);
     }
 
     else if(text == INFO_BOT ){
         bot_reply = _avaibleCmds();
-        _bot->sendMessage(chat_id, bot_reply);
+        sendMessage(bot_reply);
+    }
+
+    else if(text.startsWith(SET_TIME_ZONE)){
+        String timeZValue = text.substring(String(SET_TIME_ZONE).length());
+        timeZValue.trim(); // remove spaces
+        int offset = timeZValue.toInt();
+
+        if(offset <= 14 && offset >= -12){ // -k become k || or k become -k, ezTime use a reverse logic 
+            String posix_string = "UTC";
+
+            if(offset <= 0)
+                posix_string += "+" + String(abs(offset));
+            else 
+                posix_string += "-" + String(offset);
+
+            _tz->setPosix(posix_string);
+            msgTime = &_tz->dateTime("l, d-M-Y H:i");
+            bot_reply = " Timezone updated successfully!\nCurrent local time:"  +*msgTime ;
+            Serial.println("[BOT] Timezone changed to " + posix_string);
+
+        } else 
+            bot_reply = "Invalid offset. Please use a value between -12 and 14.";
+        
+        sendMessage(bot_reply);
     }
        
     else{
          bot_reply = "The cmd given does not exist:\n" + _avaibleCmds();
         Serial.println("[BOT] ERROR: The text do not matches whit any of the avaible cmds");
-        _bot->sendMessage(chat_id, bot_reply);
+        sendMessage(bot_reply);
 
     }
 }
@@ -79,7 +105,8 @@ String telegramBot::_avaibleCmds() {
            "✤ " + String(INIT_GUARD) + " → activate guard\n"
            "✤ " + String(STOP_GUARD) + " → deactivate guard\n"
            "✤ " + String(TEST_ALARM) + " → test hardware\n"
-           "✤ " + String(REQ_DATA) + " → plant health data\n";
+           "✤ " + String(REQ_DATA) + " → plant health data\n"
+           "✤ " + String(SET_TIME_ZONE) + " + [hours after/before UTC (es: `/time_zone 2`)] → set new time zone\n";
 }
 
 void telegramBot :: sendMessage(const String& text ){

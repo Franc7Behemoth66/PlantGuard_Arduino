@@ -7,6 +7,7 @@
 #include <ezTime.h>
 #include <Arduino_MKRIoTCarrier.h>
 #include <WiFiNINA.h>
+#include <ArduinoJson.h>
 
 #include "secrets.h"
 #include "telegramBot.h"
@@ -17,6 +18,7 @@ bool catDetected = false;
 unsigned long lastBotCheck = 0;
 bool isScreenUpdated = false;
 
+WiFiClient apiClient;
 Timezone timeZone;
 MKRIoTCarrier carrier;
 telegramBot bot;
@@ -24,6 +26,7 @@ CatAlarm alarm(carrier, catDetected);
 
 int wifiStatus = WL_IDLE_STATUS;
 const int pinPIR = A6;
+
 
 void setup() {
     Serial.begin(9600);
@@ -50,20 +53,20 @@ void setup() {
     --------------------------------------------*/
 
     CARRIER_CASE = false;
-    alarm.begin();
     carrier.begin();
-    waitForSync();
-    // if timeZone.setLocation("geoip") fails (due to a server error), the sys statically set the time on Italy's time zone
-    if (!timeZone.setLocation("geoip")) {
-        Serial.println("[TZ] geoip failed, using Italy fallback");
-        timeZone.setPosix("CET-1CEST,M3.5.0,M10.5.0/3");
-    }
-    else
-        Serial.println("[TZ] geoip sucesfull, time zone: " +timeZone.getTimezoneName());
+    alarm.begin();
+
+    Serial.println(">> [Timezone] Sync with NTP server...");
+    waitForSync(); // fetch the exact UTC time
+    Serial.println(">> [Timezone] UTC time obtained");
     
-    Serial.println("[TZ] Active timezone: " + timeZone.getPosix());
+    Serial.println(">> UTC: " + timeZone.dateTime("H:i:s d-M-Y"));
 
     bot.begin(carrier, isArduinoActive, timeZone);
+
+    Serial.println(">> [Timezone] Now the user have to set his/her time zone");
+    bot.sendMessage("🕒 Current Time ( UTC): " + timeZone.dateTime("H:i") + "\nPlease set your timezone using: `/time_zone <hours>, es `/time_zone 2`");
+
     pinMode(pinPIR, INPUT);
     delay(5000);
 }

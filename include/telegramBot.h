@@ -5,6 +5,7 @@
 #define STOP_GUARD "/stop_guard"
 #define TEST_ALARM "/test"
 #define REQ_DATA "/plant_health" // a bunch of data, such as temperature and Humidity
+#define SET_TIME_ZONE "/time_zone"
 
 #define BOT_POLL_INTERVAL 1000 // check for bot cmds every 1 s
 
