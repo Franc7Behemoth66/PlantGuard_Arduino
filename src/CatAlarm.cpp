@@ -1,28 +1,30 @@
 #include "CatAlarm.h"
 
 CatAlarm::CatAlarm(MKRIoTCarrier& carrier, bool& isSysTrigger)
-    : _carrier(carrier), _isTriggered(isSysTrigger), _fallDetector(true), _beepCounter(0), _lastBeepTime(0), _lastBlinkTime(0) {}
+    : _carrier(carrier), _isTriggered(isSysTrigger), _fallDetector(true),
+      _beepCounter(0), _lastBeepTime(0), _lastBlinkTime(0),
+      _soundStatus(false), _blinkStatus(false) {}
 
 void CatAlarm::begin() {
     _carrier.display.fillScreen(ST77XX_BLACK);
-     _carrier.leds.fill(_carrier.leds.Color(0, 55, 0), 0, 5); // green: system ready
+    _carrier.leds.fill(_carrier.leds.Color(0, 55, 0), 0, 5); // green: system ready
     _carrier.leds.show();
 }
 
 void CatAlarm::trigger(bool active) {
     if (active) {
         if (!_isTriggered) {
-            _carrier.leds.fill(_carrier.leds.Color(255, 255, 0), 0, 5);
-            _carrier.leds.show();
             _isTriggered = true;
             _beepCounter = 0;
+            _soundStatus = false;  
+            _blinkStatus = false;  
             _lastBeepTime = millis();
-            _lastBlinkTime = 0;
+            _lastBlinkTime = millis();
         }
     } else {
         _isTriggered = false;
         _carrier.Buzzer.noSound();
-        _carrier.leds.fill(_carrier.leds.Color(0, 55, 0), 0, 5);
+        _carrier.leds.fill(_carrier.leds.Color(0, 55, 0), 0, 5); // back to green
         _carrier.leds.show();
     }
 }
@@ -30,27 +32,27 @@ void CatAlarm::trigger(bool active) {
 void CatAlarm::update() {
     if (!_isTriggered) return;
 
-    static bool soundStatus = false;
-    static bool blinkStatus = false;
     long int currentTime = millis();
 
+    // --- LED blink (yellow / off every 300ms) ---
     if (currentTime - _lastBlinkTime >= 300) {
-        blinkStatus = !blinkStatus;
-        if (blinkStatus)
-            _carrier.leds.fill(_carrier.leds.Color(255, 255, 0), 0, 5); // leds yellow blinks every 300 ms
+        _blinkStatus = !_blinkStatus;
+        if (_blinkStatus)
+            _carrier.leds.fill(_carrier.leds.Color(255, 255, 0), 0, 5);
         else
             _carrier.leds.clear();
         _carrier.leds.show();
         _lastBlinkTime = currentTime;
     }
 
-    if (!soundStatus && ((currentTime - _lastBeepTime) >= random(200) + 100)) {
+    // --- Buzzer beeps ---
+    if (!_soundStatus && ((currentTime - _lastBeepTime) >= random(200) + 100)) {
         _carrier.Buzzer.sound(random(500) + 170);
-        soundStatus = true;
+        _soundStatus = true;
         _lastBeepTime = currentTime;
-    } else if (soundStatus && ((currentTime - _lastBeepTime) >= random(400) + 100)) {
+    } else if (_soundStatus && ((currentTime - _lastBeepTime) >= random(400) + 100)) {
         _carrier.Buzzer.noSound();
-        soundStatus = false;
+        _soundStatus = false;
         _beepCounter++;
         _lastBeepTime = currentTime;
     }
@@ -76,7 +78,7 @@ bool CatAlarm::fallDetector(bool active) {
         }
         return false;
     }
-    return false; 
+    return false;
 }
 
 void CatAlarm::updateDisplay(const char* message, uint16_t color, int font_size) {

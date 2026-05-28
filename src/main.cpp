@@ -7,7 +7,6 @@
 #include <ezTime.h>
 #include <Arduino_MKRIoTCarrier.h>
 #include <WiFiNINA.h>
-#include <ArduinoJson.h>
 
 #include "secrets.h"
 #include "telegramBot.h"
@@ -18,7 +17,6 @@ bool catDetected = false;
 unsigned long lastBotCheck = 0;
 bool isScreenUpdated = false;
 
-WiFiClient apiClient;
 Timezone timeZone;
 MKRIoTCarrier carrier;
 telegramBot bot;

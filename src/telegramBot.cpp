@@ -27,13 +27,13 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
         Serial.println("[SECURITY] User " + chat_id+ " not authorized");
         return;}
 
-    String *msgTime = &_tz->dateTime("l, d-M-Y H:i");
-    Serial.println("[BOT] User authorized " +chat_id +", on date " +*msgTime + ", sent " + msg.text ); 
+    String msgTime = _tz->dateTime("l, d-M-Y H:i");
+    Serial.println("[BOT] User authorized " +chat_id +", on date " +msgTime + ", sent " + msg.text ); 
 
     if(text == INIT_GUARD ){ 
         if(! *_arduinoBoardState ){
             * _arduinoBoardState = true;
-            bot_reply = "[ " +*msgTime + " ]" + "The Arduino system has been power on";
+            bot_reply = "[ " +msgTime + " ]" + "The Arduino system has been power on";
             sendMessage(bot_reply);
         }
         else
@@ -43,7 +43,7 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
     else if(text == STOP_GUARD){
         if( *_arduinoBoardState ){
             * _arduinoBoardState = false;
-            bot_reply = "[ " +*msgTime + " ]" + "The Arduino system has been power off" ;
+            bot_reply = "[ " +msgTime + " ]" + "The Arduino system has been power off" ;
             sendMessage(bot_reply);
         }
         else
@@ -59,7 +59,7 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
     else if(text == REQ_DATA){
         double temp = _carrier->Env.readTemperature();
         double humidity = _carrier->Env.readHumidity();
-        bot_reply = "[ Report of: " +*msgTime + " ]" + "\nEnvironmental data :\n temperature: " + String(temp) + " °C\n humidity: " + String(humidity) + " %";
+        bot_reply = "[ Report of: " +msgTime + " ]" + "\nEnvironmental data :\n temperature: " + String(temp) + " °C\n humidity: " + String(humidity) + " %";
         sendMessage(bot_reply);
     }
 
@@ -73,7 +73,7 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
         timeZValue.trim(); // remove spaces
         int offset = timeZValue.toInt();
 
-        if(offset <= 14 && offset >= -12){ // -k become k || or k become -k, ezTime use a reverse logic 
+        if(offset <= 14 && offset >= -12){ // -k become k || or k become -k, ezTime use a reversed sign convention
             String posix_string = "UTC";
 
             if(offset <= 0)
@@ -82,8 +82,8 @@ void telegramBot::_handleMessage(telegramMessage& msg) {
                 posix_string += "-" + String(offset);
 
             _tz->setPosix(posix_string);
-            msgTime = &_tz->dateTime("l, d-M-Y H:i");
-            bot_reply = " Timezone updated successfully!\nCurrent local time:"  +*msgTime ;
+            msgTime = _tz->dateTime("l, d-M-Y H:i");
+            bot_reply = " Timezone updated successfully!\nCurrent local time:"  +msgTime ;
             Serial.println("[BOT] Timezone changed to " + posix_string);
 
         } else 

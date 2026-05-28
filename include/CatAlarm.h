@@ -20,4 +20,6 @@ private:
     int _beepCounter;
     long int _lastBeepTime; 
     long int _lastBlinkTime; // LED blink timer
+    bool _soundStatus; 
+    bool _blinkStatus;
 };

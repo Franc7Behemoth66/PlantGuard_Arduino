@@ -2,6 +2,8 @@
 
 [![Language](https://img.shields.io/badge/language-C++%2011-red)](https://en.cppreference.com/cpp/11)
 [![Platform](https://img.shields.io/badge/platform-Arduino-blue)](https://www.arduino.cc)
+[![License](https://img.shields.io/badge/license-MIT-yellow)](https://github.com/Franc7Behemoth66/PlantGuard_Arduino/tree/main?tab=MIT-1-ov-file)
+
 
 An Arduino-based smart plant guardian that detects cats, monitors for falls, and reports via Telegram — built for the **Arduino MKR IoT Carrier**.
 
@@ -100,6 +102,7 @@ To find your chat ID, talk to [@userinfobot](https://t.me/userinfobot).
 | `/stop_guard` | Deactivate the plant guard system |
 | `/test` | Run all hardware self-tests |
 | `/plant_health` | Get current temperature and humidity readings with timestamp |
+| `/time_zone <offset>` | Set timezone as UTC offset (e.g. `/time_zone 2` for UTC+2) |
 
 The bot includes a **security layer**: only messages from the configured `USER_ID` are processed; all others are silently rejected.
 
@@ -132,32 +135,33 @@ On detection:
 - `catDetected` is passed by reference to `CatAlarm` — when the alarm finishes it resets the flag automatically, no extra logic needed in `main.cpp`
 
 ---
-## 🌐 Timezone & NTP (Network Time Protocol)
+## 🌐 Timezone 
 
 Arduino has no real-time clock — every time it boots, its internal clock resets to zero. To solve this, the system syncs with an **NTP server** on boot: a public internet server that provides the exact current time (accurate to milliseconds, sourced from atomic clocks).
 
-The library used is **ezTime**, which handles sync, timezone, and DST automatically:
+The library used is **ezTime**:
 
 ```cpp
-waitForSync();                  // blocks until NTP sync is complete
-timeZone.setLocation("geoip");  // detects timezone from the board's public IP
+waitForSync(); // blocks until UTC time is obtained from pool.ntp.org
 ```
 
-`waitForSync()` queries `pool.ntp.org` — a pool of thousands of free public NTP servers worldwide. Once synced, the board knows the exact UTC time.
+Once synced, the board knows the exact UTC time. The timezone is then set manually by the user via Telegram: on every boot the bot sends a message showing the current UTC time and asking the user to set their local offset:
 
-`setLocation("geoip")` asks a GeoIP service which timezone corresponds to the board's IP address, and loads the correct DST rules automatically. No timezone string or offset needs to be configured manually — it works anywhere in the world.
+```
+🕒 Current Time (UTC): 14:32
+Please set your timezone using: /time_zone <hours>, e.g. /time_zone 2
+```
 
-If the GeoIP lookup fails, the system falls back to Italy's timezone automatically:
+The `/time_zone` command accepts any UTC offset between -12 and +14 and applies it immediately using a POSIX string:
 
 ```cpp
-if (!timeZone.setLocation("geoip")) {
-    timeZone.setPosix("CET-1CEST,M3.5.0,M10.5.0/3"); // Italy fallback
-}
+// /time_zone 2  →  UTC-2  (ezTime uses reversed sign convention)
+_tz->setPosix("UTC-2");
 ```
 
 `events()` is called every loop iteration to keep the internal clock aligned with the NTP server, correcting any drift over time.
 
-Timestamps appear in all Telegram messages and `/plant_health` reports in the **local time of the network the board is connected to**, with summer/winter time handled automatically.
+All timestamps in Telegram messages and `/plant_health` reports reflect the user-configured local time.
 
 ---
 
@@ -182,15 +186,8 @@ The `/test` command runs `run_all_hardware_tests()`, which sequentially tests:
 1. Wire the PIR sensor signal pin to `A6` on the MKR board
 2. Install all required libraries (including `ezTime`)
 3. Create `secrets.h` with your credentials
-4. Compile and upload via PlatformIO
-5. Open the Serial Monitor at `9600 baud` to follow boot and system logs
-6. Message your bot on Telegram with `/active_guard` to start monitoring
-
----
-
-## 📝 Notes
-
-- `CARRIER_CASE = false` must be set **before** `carrier.begin()` — otherwise the sensors fail to initialize
-- The system starts with `isArduinoActive = false` — it must be explicitly activated via `/active_guard`
-- The display is only rewritten when the state changes (`isScreenUpdated` flag) to avoid unnecessary SPI traffic
-- `alarm.update()` is called inside `if(isArduinoActive)` — if the system is deactivated mid-alarm the buzzer stops immediately
+4. Run `patch_libs.py` if required (fixes incompatible library headers)
+5. Compile and upload via PlatformIO
+6. Open the Serial Monitor at `9600 baud` to follow boot and system logs
+7. Reply to the bot's startup message with `/time_zone <offset>` to set your local time
+8. Message your bot on Telegram with `/active_guard` to start monitoring
