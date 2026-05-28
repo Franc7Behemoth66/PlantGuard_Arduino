@@ -97,9 +97,9 @@ To find your chat ID, talk to [@userinfobot](https://t.me/userinfobot).
 
 
 <p align="center">
-  <img src=".github/images/image1.png" width="45%" alt="descrizione 1">
+  <img src=".github/images/image1.PNG" width="45%" alt="descrizione 1">
   &nbsp;&nbsp;
-  <img src=".github/images/image2.png" width="45%" alt="descrizione 2">
+  <img src=".github/images/image2.PNG" width="45%" alt="descrizione 2">
 </p>
 
 | Command | Description |
