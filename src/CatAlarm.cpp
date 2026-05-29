@@ -46,7 +46,7 @@ void CatAlarm::update() {
 
     // --- Buzzer beeps ---
     if (!_soundStatus && ((currentTime - _lastBeepTime) >= random(200) + 100)) {
-        _carrier.Buzzer.sound(random(4500) + 170);
+        _carrier.Buzzer.sound(random(500) + 4500);
         _soundStatus = true;
         _lastBeepTime = currentTime;
     } else if (_soundStatus && ((currentTime - _lastBeepTime) >= random(400) + 100)) {
